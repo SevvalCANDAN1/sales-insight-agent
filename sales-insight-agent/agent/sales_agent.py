@@ -7,6 +7,7 @@ from strands.models import BedrockModel
 
 from agent.prompts import build_system_prompt
 from tools.sales_data import get_sales_data
+from tools.sales_analysis import get_product_sales_ranking
 
 load_dotenv()
 
@@ -31,7 +32,7 @@ def create_sales_agent():
     sales_agent = Agent(
         model=model,
         system_prompt=system_prompt,
-        tools=[get_sales_data]
+        tools=[get_sales_data, get_product_sales_ranking]
     )
 
     return sales_agent
