@@ -1,0 +1,21 @@
+
+services:
+  postgres:
+    image: postgres:16
+    container_name: sales-insight-db
+    restart: unless-stopped
+
+    environment:
+      POSTGRES_DB: salesdb
+      POSTGRES_USER: salesadmin
+      POSTGRES_PASSWORD: change_this_password
+
+    ports:
+      - "5433:5432"
+
+    volumes:
+      - sales_data:/var/lib/postgresql/data
+      - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql
+
+volumes:
+  sales_data:
