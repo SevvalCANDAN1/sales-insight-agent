@@ -5,19 +5,23 @@ from database.queries import fetch_sales_data
 def get_product_sales_ranking(
     start_date: str,
     end_date: str,
-    limit: int = 5
+    limit: int = 5,
+    sort_by: str = "total_sales"
 ) -> dict:
     """
-        Ranks products by sales amount, identifying those with the highest and lowest sales within the specified date range. 
+        Ranks products by total sales revenue or quantity sold.
 
         Args:
-        start_date: Start date (YYYY-MM-DD). 
-        end_date: End date (YYYY-MM-DD). 
-        limit: The number of products to display for both the top and bottom rankings. 
+            start_date: Start date (YYYY-MM-DD).
+            end_date: End date (YYYY-MM-DD).
+            limit: Number of products to display in each ranking.
+            sort_by: Ranking metric. Use "total_sales" for revenue
+                    or "total_quantity" for quantity sold.
 
         Returns:
-        A list of the products with the highest and lowest sales.
+            Top and bottom products according to the selected metric.
     """
+
     if limit < 1 or limit > 20:
         raise ValueError("Limit must be between 1 and 20.")
 
@@ -31,15 +35,18 @@ def get_product_sales_ranking(
         return {
             "top_products": [],
             "bottom_products": [],
+            "sort_by": sort_by,
             "message": "No sales data found for the specified date range."
         }
 
     sorted_products = sorted(
-        products, 
-        key=lambda x: x['total_sales'], 
-        reverse=True)
+        products,
+        key=lambda x: x[sort_by],
+        reverse=True
+    )
     
     return {
         "top_products": sorted_products[:limit],
-        "bottom_products": sorted_products[-limit:][::-1]
+        "bottom_products": sorted_products[-limit:][::-1],
+        "sort_by": sort_by
     }
