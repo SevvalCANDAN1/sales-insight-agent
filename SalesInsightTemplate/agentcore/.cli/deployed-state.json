@@ -1,0 +1,10 @@
+{
+  "targets": {
+    "default": {
+      "stackArn": "arn:aws:cloudformation:eu-west-1:831873947117:stack/AgentCore-SalesInsightTemplate-default/3ff32d50-dc4d-11f1-9d76-06ffdb9273d7",
+      "resources": {
+        "credentials": {}
+      }
+    }
+  }
+}
