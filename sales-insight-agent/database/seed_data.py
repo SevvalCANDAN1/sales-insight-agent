@@ -1,20 +1,48 @@
 
+import os
 import random
 import psycopg2
 from psycopg2.extras import execute_values
 from datetime import date, timedelta
 from decimal import Decimal
 
+from dotenv import load_dotenv
+
+load_dotenv()
+
 random.seed(42)
 
 
-DB_CONFIG = {
-    "host": "localhost",
-    "port": 5433,
-    "database": "salesdb",
-    "user": "salesadmin",
-    "password": "change_this_password"
-}
+def get_admin_connection():
+    """
+    Connects as the database owner, since seeding needs write access
+    that the read-only agent user does not have.
+    """
+    required_variables = [
+        "DB_HOST",
+        "DB_PORT",
+        "POSTGRES_DB",
+        "POSTGRES_USER",
+        "POSTGRES_PASSWORD"
+    ]
+    missing = [
+        variable
+        for variable in required_variables
+        if not os.getenv(variable)
+    ]
+
+    if missing:
+        raise ValueError(
+            f"Missing required environment variables: {', '.join(missing)}"
+        )
+
+    return psycopg2.connect(
+        host=os.getenv("DB_HOST"),
+        port=os.getenv("DB_PORT"),
+        database=os.getenv("POSTGRES_DB"),
+        user=os.getenv("POSTGRES_USER"),
+        password=os.getenv("POSTGRES_PASSWORD")
+    )
 
 
 PRODUCTS = [
@@ -114,7 +142,7 @@ def main():
     connection = None
 
     try:
-        connection = psycopg2.connect(**DB_CONFIG)
+        connection = get_admin_connection()
 
         with connection:
             with connection.cursor() as cursor:
